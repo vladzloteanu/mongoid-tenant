@@ -12,7 +12,9 @@ module Mongoid
 
     included do
       store_in database: lambda {
-        Thread.current[:tenancy] || raise('No tenancy set!')
+        current_tenant_key = Thread.current[:tenancy] || raise('No tenancy set!')
+        default_db_name = Mongoid.default_client.database.name
+        "#{default_db_name}_#{current_tenant_key}"
       }
 
       def tenancy
